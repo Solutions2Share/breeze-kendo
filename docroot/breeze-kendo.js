@@ -77,15 +77,45 @@
         },
         create: function(options) {
             //console.log("CREATE", options);
-            this._saveChanges();
+            this._saveChanges().then(
+                    function (saveResult) {
+                        options.success(saveResult.httpResponse);
+                    }
+                ).catch(
+                    function (error) {
+                        options.error(
+                            error.httpResponse,
+                            error.statusText || (error.innerError && error.innerError.statusText));
+                    }
+                );
         },
         update: function(options) {
             //console.log("UPDATE", options);
-            this._saveChanges();
+            this._saveChanges().then(
+                    function (saveResult) {
+                        options.success(saveResult.httpResponse);
+                    }
+                ).catch(
+                    function (error) {
+                        options.error(
+                            error.httpResponse,
+                            error.statusText || (error.innerError && error.innerError.statusText));
+                    }
+                );
         },
         destroy: function(options) {
             //console.log("DESTROY", options);
-            this._saveChanges();
+            this._saveChanges().then(
+                    function (saveResult) {
+                        options.success(saveResult.httpResponse);
+                    }
+                ).catch(
+                    function (error) {
+                        options.error(
+                            error.httpResponse,
+                            error.statusText || (error.innerError && error.innerError.statusText));
+                    }
+                );
         },
 
         _saveChanges: (function(){
@@ -94,10 +124,20 @@
             var timer = null;
             return function() {
                 var self = this;
+                var deferred = breeze.Q.defer();
                 clearTimeout(timer);
-                setTimeout(function(){
-                    self.manager.saveChanges();
+                setTimeout(function () {
+                    self.manager.saveChanges().then(
+                        function (saveResult) {
+                            deferred.resolve(saveResult);
+                        }
+                    ).catch(
+                        function (error) {
+                            deferred.reject(error);
+                        }
+                    );
                 }, 10);
+                return deferred.promise;
             };
         })(),
 
