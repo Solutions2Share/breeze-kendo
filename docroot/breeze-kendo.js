@@ -2,6 +2,7 @@
 
 /**
  * This is a forked version of the breeze-kendo bridge (https://github.com/kendo-labs/breeze-kendo).
+ * You can get the latest version at https://github.com/iozag/breeze-kendo.
  * 
  * Released under Apache 2.0 licence (http://kendoui-labs.telerik.com/#license)
  *
@@ -31,6 +32,9 @@
         this.query = options.query;
         this.scheduler = options.scheduler;
         this.kendoModelType = kendoModelType;
+
+        // Object containing the Breeze Entity object for each item in the data source.
+        this.breezeEntityMapping = Object.create(null);
     }
 
     function makeOperator(op) {
@@ -94,7 +98,7 @@
         };
     }
 
-    function syncItems(observable, entity) {
+    function syncItems(breezeEntityMapping, observable, entity) {
         var protect = mutex();
         observable.bind({
             'change': protect(function (e) {
@@ -117,7 +121,9 @@
                 );
             }
         }));
-        observable.__breezeEntity = entity;
+
+        // Add original entity to the mapping list.
+        breezeEntityMapping[observable.id] = entity;
     }
 
     /**
@@ -281,9 +287,20 @@
              * @param {object} dataItem - Model to cancel.
              */
             _cancelChanges: function (dataItem) {
-                var manager = this.manager;
-                if (dataItem && dataItem.__breezeEntity && dataItem.__breezeEntity.entityManager) {
-                    dataItem.__breezeEntity.entityAspect.rejectChanges();
+                var manager = this.manager,
+                    breezeEntityMapping = this.breezeEntityMapping,
+                    breezeEntity;
+
+                if (dataItem) {
+                    // Read Breeze entity for data item from mapping list.
+                    breezeEntity = breezeEntityMapping[dataItem.id];
+
+                    if (breezeEntity && breezeEntity.entityManager) {
+                        breezeEntity.entityAspect.rejectChanges();
+                    }
+                    else {
+                        manager.rejectChanges();
+                    }
                 } else {
                     manager.rejectChanges();
                 }
@@ -297,6 +314,7 @@
                 var manager = this.manager,
                     query = this.query,
                     kendoModelType = this.kendoModelType,
+                    breezeEntityMapping = this.breezeEntityMapping,
                     meta,
                     typeName,
                     typeObj,
@@ -339,7 +357,7 @@
                         obj = new kendoModelType(obj);
                     }
 
-                    syncItems(obj, rec);
+                    syncItems(breezeEntityMapping, obj, rec);
                     return obj;
                 });
 
@@ -348,14 +366,15 @@
                     switch (ev.action) {
                         case 'remove':
                             ev.items.forEach(function (item) {
-                                item.__breezeEntity.entityAspect.setDeleted();
+                                // Mark the Breeze entity of the current data source item as deleted.
+                                breezeEntityMapping[item.id].entityAspect.setDeleted();
                             });
                             break;
                         case 'add':
                             ev.items.forEach(function (item) {
                                 var entity = manager.createEntity(typeName || query.resourceName, item);
                                 manager.addEntity(entity);
-                                syncItems(item, entity);
+                                syncItems(breezeEntityMapping, item, entity);
                             });
                             break;
                     }
