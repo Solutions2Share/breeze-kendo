@@ -208,39 +208,45 @@
 
             // The configuration used when the data source saves newly created data items.
             create: function (options) {
+                var handleError = this._handleError;
+
                 this._saveChanges().then(
                         function (saveResult) {
                             options.success(saveResult.httpResponse);
                         }
                     ).catch(
                         function (error) {
-                            this._handleError(options, error);
+                            handleError(options, error);
                         }
                     );
             },
 
             // The configuration used when the data source saves updated data items.
             update: function (options) {
+                var handleError = this._handleError;
+
                 this._saveChanges().then(
                         function (saveResult) {
                             options.success(saveResult.httpResponse);
                         }
                     ).catch(
                         function (error) {
-                            this._handleError(options, error);
+                            handleError(options, error);
                         }
                     );
             },
 
             // The configuration used when the data source destroys data items.
             destroy: function (options) {
+                var handleError = this._handleError;
+
                 this._saveChanges().then(
                         function (saveResult) {
                             options.success(saveResult.httpResponse);
                         }
                     ).catch(
                         function (error) {
-                            this._handleError(options, error);
+                            handleError(options, error);
                         }
                     );
             },
