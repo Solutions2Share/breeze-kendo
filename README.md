@@ -11,8 +11,8 @@ on your OS.  We don't need the system-wide service, so we can stop it:
 
 Then:
 
-    git clone https://github.com/kendo-labs/breeze-kendo2.git
-    cd breeze-kendo2
+    git clone https://github.com/iozag/breeze-kendo.git
+    cd breeze-kendo
     npm install
     mkdir db
     mongod --dbpath db
@@ -44,12 +44,16 @@ seems to best support ASP.NET) it should work flawless.
   (i.e. has metadata and breezeManager.saveChanges() works) adding in
   Kendo widgets that support a Kendo DataSource should be a snap.
 
+- `kendo.data.breeze.SchedulerSource` object for using with the [Kendo UI Scheduler](http://docs.telerik.com/kendo-ui/web/scheduler/overview).
+
 - auto-generates a Kendo-compatible data model (`schema.model`) based
   on metadata defined in the Breeze EntityManager.
 
 - supports server-side pagination, sort, filters.
 
 ## Usage
+
+### Loading
 
 We assume your server is alredy configured for Breeze.js.
 
@@ -63,12 +67,13 @@ UI and Breeze:
 <script src="breeze-kendo.js"></script>
 ```
 
-It defines `kendo.data.breeze.Source`, an object which inherits from
-`kendo.data.DataSource` and can be used seamlessly with any widgets
-that support the [DataSource
-API](http://docs.telerik.com/kendo-ui/api/framework/datasource).  The
-Breeze-specific options are `manager` (must be a breeze.EntityManager)
-and `query` (a breeze.EntityQuery).  Example:
+### Using with Kendo Widgets
+
+It defines `kendo.data.breeze.Source`, an object which inherits from `kendo.data.DataSource` and can be used seamlessly with any widgets
+that support the [DataSource API](http://docs.telerik.com/kendo-ui/api/framework/datasource).  
+The Breeze-specific options are `manager` (must be a [breeze.EntityManager](http://www.breezejs.com/sites/all/apidocs/classes/EntityManager.html))
+and `query` (a [breeze.EntityQuery](http://www.breezejs.com/sites/all/apidocs/classes/EntityQuery.html)).  
+Example:
 
 ```js
 var manager = new breeze.EntityManager(...);
@@ -105,5 +110,30 @@ $("#grid").kendoGrid({
 });
 ```
 
-Now pagination, sorting, filtering and even saving is entirely handled
-by Breeze through our bindings.
+Now pagination, sorting, filtering and even saving is entirely handled by Breeze through our bindings.
+
+### Using with Kendo Scheduler
+
+Use `kendo.data.breeze.SchedulerSource`, an object which inherits from
+[`kendo.data.SchedulerDataSource`](http://docs.telerik.com/kendo-ui/api/javascript/data/schedulerdatasource) 
+and can be used seamlessly with any the [Scheduler Widget](http://docs.telerik.com/kendo-ui/web/scheduler/overview).  
+The Breeze-specific options are `manager` (must be a [breeze.EntityManager](http://www.breezejs.com/sites/all/apidocs/classes/EntityManager.html)), 
+`query` (a [breeze.EntityQuery](http://www.breezejs.com/sites/all/apidocs/classes/EntityQuery.html))
+and `scheduler` (a jQuery element).  
+Example:
+
+```js
+var manager = new breeze.EntityManager(...);
+var query = breeze.EntityQuery.from("Products");
+var dataSource = new kendo.data.breeze.SchedulerSource({
+  manager         : manager,
+  query           : query,
+  scheduler       : $('#scheduler'),
+  serverSorting   : true,
+  serverPaging    : true,
+  serverFiltering : true,
+  pageSize        : 10
+});
+```
+
+The scheduler jQuery element is only required if you want the data source to filter data to the current view of the scheduler.
