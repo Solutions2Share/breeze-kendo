@@ -30,11 +30,14 @@
 
         this.manager = options.manager;
         this.query = options.query;
+        this.useBreezeMapping = options.useBreezeMapping;
         this.scheduler = options.scheduler;
         this.kendoModelType = kendoModelType;
 
-        // Object containing the Breeze Entity object for each item in the data source.
-        this.breezeEntityMapping = Object.create(null);
+        if (this.useBreezeMapping) {
+            // Object containing the Breeze Entity object for each item in the data source.
+            this.breezeEntityMapping = Object.create(null);
+        }
     }
 
     function makeOperator(op) {
@@ -98,8 +101,9 @@
         };
     }
 
-    function syncItems(breezeEntityMapping, observable, entity) {
-        var protect = mutex();
+    function syncItems(observable, entity, useBreezeMapping, breezeEntityMapping) {
+        var protect = mutex()
+
         observable.bind({
             'change': protect(function (e) {
                 if (e.field) {
@@ -122,8 +126,13 @@
             }
         }));
 
-        // Add original entity to the mapping list.
-        breezeEntityMapping[observable.id] = entity;
+        if (useBreezeMapping) {
+            // Add original entity to the mapping list.
+            breezeEntityMapping[observable.id] = entity;
+        } else {
+            // Add original entity to the __breezeEntity property.
+            observable.__breezeEntity = entity;
+        }
     }
 
     /**
@@ -294,12 +303,19 @@
              */
             _cancelChanges: function (dataItem) {
                 var manager = this.manager,
+                    useBreezeMapping = this.useBreezeMapping,
                     breezeEntityMapping = this.breezeEntityMapping,
                     breezeEntity;
 
                 if (dataItem) {
-                    // Read Breeze entity for data item from mapping list.
-                    breezeEntity = breezeEntityMapping[dataItem.id];
+                    if (useBreezeMapping) {
+                        // Read Breeze entity for data item from mapping list.
+                        breezeEntity = breezeEntityMapping[dataItem.id];
+                    }
+                    else {
+                        // Read Breeze entity from data item.
+                        breezeEntity = dataItem.__breezeEntity;
+                    }
 
                     if (breezeEntity && breezeEntity.entityManager) {
                         breezeEntity.entityAspect.rejectChanges();
@@ -320,6 +336,7 @@
                 var manager = this.manager,
                     query = this.query,
                     kendoModelType = this.kendoModelType,
+                    useBreezeMapping = this.useBreezeMapping,
                     breezeEntityMapping = this.breezeEntityMapping,
                     meta,
                     typeName,
@@ -363,7 +380,7 @@
                         obj = new kendoModelType(obj);
                     }
 
-                    syncItems(breezeEntityMapping, obj, rec);
+                    syncItems(obj, rec, useBreezeMapping, breezeEntityMapping);
                     return obj;
                 });
 
@@ -373,14 +390,19 @@
                         case 'remove':
                             ev.items.forEach(function (item) {
                                 // Mark the Breeze entity of the current data source item as deleted.
-                                breezeEntityMapping[item.id].entityAspect.setDeleted();
+                                if (useBreezeMapping) {
+                                    breezeEntityMapping[item.id].entityAspect.setDeleted();
+                                }
+                                else {
+                                    item.__breezeEntity.entityAspect.setDeleted();
+                                }
                             });
                             break;
                         case 'add':
                             ev.items.forEach(function (item) {
                                 var entity = manager.createEntity(typeName || query.resourceName, item);
                                 manager.addEntity(entity);
-                                syncItems(breezeEntityMapping, item, entity);
+                                syncItems(item, entity, useBreezeMapping, breezeEntityMapping);
                             });
                             break;
                     }
@@ -495,7 +517,10 @@
                 {
                     transport: transport,
                     schema: transport._makeSchema(),
-                    batch: true
+                    batch: true,
+                    // By default use mapping to avoid circular references in the data items, 
+                    // since Kendo Scheduler cannot handle them.
+                    useBreezeMapping: true 
                 },
                 options);
             kendo.data.SchedulerDataSource.prototype.init.call(this, options);
