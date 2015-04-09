@@ -3,7 +3,7 @@
 /**
  * This is a forked version of the breeze-kendo bridge (https://github.com/kendo-labs/breeze-kendo).
  * You can get the latest version at https://github.com/iozag/breeze-kendo.
- * 
+ *
  * Released under Apache 2.0 licence (http://kendoui-labs.telerik.com/#license)
  *
  */
@@ -24,6 +24,7 @@
         if (!options.manager) {
             throw new Error('Please specify a Breeze EntityManager via `manager` option');
         }
+
         if (!options.query) {
             throw new Error('Please specify a Breeze EntityQuery via `query` option');
         }
@@ -61,12 +62,15 @@
                 value = f.value;
             return Predicate.create(field, operator, value);
         });
+
         if (args.logic === 'and') {
             return Predicate.and(filters);
         }
+
         if (args.logic === 'or') {
             return Predicate.or(filters);
         }
+
         throw new Error('Unsupported predicate logic ' + args.logic);
     }
 
@@ -92,8 +96,7 @@
                     locked = true;
                     try {
                         f.apply(this, arguments);
-                    }
-                    finally {
+                    } finally {
                         locked = false;
                     }
                 }
@@ -102,10 +105,10 @@
     }
 
     function syncItems(observable, entity, useBreezeMapping, breezeEntityMapping) {
-        var protect = mutex()
+        var protect = mutex();
 
         observable.bind({
-            'change': protect(function (e) {
+            change: protect(function (e) {
                 if (e.field) {
                     entity[e.field] = observable[e.field];
                 } else {
@@ -143,8 +146,8 @@
         {
             // The configuration used when the data source loads data items from a remote service
             read: function (options) {
-                var self = this,
-                    query = self.query,
+                var _this = this,
+                    query = _this.query,
                     args = options.data,
                     schedulerWidget,
                     schedulerView,
@@ -156,8 +159,9 @@
                 }
 
                 // If data source of a scheduler widget, filter by visible date range of current view.
-                if (self.scheduler) {
-                    schedulerWidget = self.scheduler.getKendoScheduler();
+                if (_this.scheduler) {
+                    schedulerWidget = _this.scheduler.getKendoScheduler();
+
                     // Make sure scheduler widget is already created.
                     if (schedulerWidget) {
                         schedulerView = schedulerWidget.view();
@@ -202,9 +206,9 @@
                 }
 
                 try {
-                    self.manager.executeQuery(query,
+                    _this.manager.executeQuery(query,
                          function (data) {
-                             options.success(self._makeResults(data));
+                             options.success(_this._makeResults(data));
                         },
                         function (err) {
                             options.error(err);
@@ -279,11 +283,12 @@
                 // Throttle, since we will get multiple calls even in "batch" mode.
                 var timer = null;
                 return function () {
-                    var self = this,
+                    var _this = this,
                         deferred = breeze.Q.defer();
+
                     clearTimeout(timer);
                     setTimeout(function () {
-                        self.manager.saveChanges().then(
+                        _this.manager.saveChanges().then(
                             function (saveResult) {
                                 deferred.resolve(saveResult);
                             }
@@ -311,16 +316,14 @@
                     if (useBreezeMapping) {
                         // Read Breeze entity for data item from mapping list.
                         breezeEntity = breezeEntityMapping[dataItem.id];
-                    }
-                    else {
+                    } else {
                         // Read Breeze entity from data item.
                         breezeEntity = dataItem.__breezeEntity;
                     }
 
                     if (breezeEntity && breezeEntity.entityManager) {
                         breezeEntity.entityAspect.rejectChanges();
-                    }
-                    else {
+                    } else {
                         manager.rejectChanges();
                     }
                 } else {
@@ -346,8 +349,8 @@
                     a;
 
                 try {
-                    meta = manager.metadataStore,
-                    typeName = meta.getEntityTypeNameForResourceName(query.resourceName),
+                    meta = manager.metadataStore;
+                    typeName = meta.getEntityTypeNameForResourceName(query.resourceName);
                     typeObj = meta.getEntityType(typeName || query.resourceName);
                 } catch (ex) {
                     // Without metadata Breeze returns plain JS objects so we can just return
@@ -363,7 +366,7 @@
                 // With the metadata, some complex objects are returned on which we can't call
                 // ObservableArray/Object (would overrun the stack).
 
-                props = typeObj.dataProperties,
+                props = typeObj.dataProperties;
                 a = data.results.map(function (rec) {
                     var obj = {},
                         schemaModel;
@@ -428,12 +431,13 @@
                     proptype;
 
                 try {
-                    meta = this.manager.metadataStore,
-                    typeName = meta.getEntityTypeNameForResourceName(this.query.resourceName),
+                    meta = this.manager.metadataStore;
+                    typeName = meta.getEntityTypeNameForResourceName(this.query.resourceName);
                     typeObj = meta.getEntityType(typeName || this.query.resourceName);
                 } catch (ex) {
                     return schema;
                 }
+
                 model = { fields: {} };
                 if (typeObj.keyProperties) {
                     if (typeObj.keyProperties.length === 1) {
@@ -455,6 +459,7 @@
                         else if (prop.dataType.name === 'Boolean') {
                             proptype = 'boolean';
                         }
+
                         model.fields[prop.name] = {
                             type: proptype,
                             defaultValue: prop.defaultValue,
@@ -490,18 +495,18 @@
         },
 
         cancelChanges: function (e) {
-            var t = this;
+            var _this = this;
 
             if (e instanceof kendo.data.Model) {
-                t._cancelModel(e);
-                t.transport._cancelChanges(e);
+                _this._cancelModel(e);
+                _this.transport._cancelChanges(e);
             } else {
-                t._destroyed = [],
-                t._detachObservableParents(),
-                t._data = t._observe(t._pristineData),
-                t.options.serverPaging && (t._total = t._pristineTotal);
-                t._change();
-                t.transport._cancelChanges();
+                _this._destroyed = [];
+                _this._detachObservableParents();
+                _this._data = _this._observe(_this._pristineData);
+                _this.options.serverPaging && (_this._total = _this._pristineTotal);
+                _this._change();
+                _this.transport._cancelChanges();
             }
         }
     });
@@ -518,27 +523,27 @@
                     transport: transport,
                     schema: transport._makeSchema(),
                     batch: true,
-                    // By default use mapping to avoid circular references in the data items, 
+                    // By default use mapping to avoid circular references in the data items,
                     // since Kendo Scheduler cannot handle them.
-                    useBreezeMapping: true 
+                    useBreezeMapping: true
                 },
                 options);
             kendo.data.SchedulerDataSource.prototype.init.call(this, options);
         },
 
         cancelChanges: function (e) {
-            var t = this;
+            var _this = this;
 
             if (e instanceof kendo.data.SchedulerEvent) {
-                t._cancelModel(e);
-                t.transport._cancelChanges(e);
+                _this._cancelModel(e);
+                _this.transport._cancelChanges(e);
             } else {
-                t._destroyed = [],
-                t._detachObservableParents(),
-                t._data = t._observe(t._pristineData),
-                t.options.serverPaging && (t._total = t._pristineTotal);
-                t._change();
-                t.transport._cancelChanges();
+                _this._destroyed = [];
+                _this._detachObservableParents();
+                _this._data = _this._observe(_this._pristineData);
+                _this.options.serverPaging && (_this._total = _this._pristineTotal);
+                _this._change();
+                _this.transport._cancelChanges();
             }
         }
     });
