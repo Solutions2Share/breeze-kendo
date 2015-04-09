@@ -71,8 +71,7 @@ UI and Breeze:
 
 It defines `kendo.data.breeze.Source`, an object which inherits from `kendo.data.DataSource` and can be used seamlessly with any widgets
 that support the [DataSource API](http://docs.telerik.com/kendo-ui/api/framework/datasource).  
-The Breeze-specific options are `manager` (must be a [breeze.EntityManager](http://www.breezejs.com/sites/all/apidocs/classes/EntityManager.html))
-and `query` (a [breeze.EntityQuery](http://www.breezejs.com/sites/all/apidocs/classes/EntityQuery.html)).  
+The Breeze-specific options are `manager` and `query`.  
 Example:
 
 ```js
@@ -117,9 +116,7 @@ Now pagination, sorting, filtering and even saving is entirely handled by Breeze
 Use `kendo.data.breeze.SchedulerSource`, an object which inherits from
 [`kendo.data.SchedulerDataSource`](http://docs.telerik.com/kendo-ui/api/javascript/data/schedulerdatasource) 
 and can be used seamlessly with any the [Scheduler Widget](http://docs.telerik.com/kendo-ui/web/scheduler/overview).  
-The Breeze-specific options are `manager` (must be a [breeze.EntityManager](http://www.breezejs.com/sites/all/apidocs/classes/EntityManager.html)), 
-`query` (a [breeze.EntityQuery](http://www.breezejs.com/sites/all/apidocs/classes/EntityQuery.html))
-and `scheduler` (a jQuery element).  
+The Breeze-specific options are `manager`, `query` and `scheduler`.  
 Example:
 
 ```js
@@ -137,3 +134,31 @@ var dataSource = new kendo.data.breeze.SchedulerSource({
 ```
 
 The scheduler jQuery element is only required if you want the data source to filter data to the current view of the scheduler.
+
+### Options
+
+Additionally to the default [DataSource configuration](http://docs.telerik.com/kendo-ui/api/javascript/data/datasource#configuration) 
+the following options are available
+
+#### query
+The [breeze.EntityQuery](http://www.breezejs.com/sites/all/apidocs/classes/EntityQuery.html) which should be used for accessing the data.
+
+#### manager
+The [breeze.EntityManager](http://www.breezejs.com/sites/all/apidocs/classes/EntityManager.html) which should be used for accessing the data.
+
+#### scheduler
+A jQuery element. 
+
+The scheduler jQuery element is only required if you want the data source to filter data to the current view of the scheduler.
+
+#### useBreezeMapping
+A boolean flag indicating if the Breeze entity should be available from the data item.
+
+If set to `true`, the mapping between Breeze entities and Kendo data items is handled internally by 
+the datasource, and the Breeze entities are not available from the data item.
+
+If set to `false`, the Breeze entity will be added to the `__breezeEntity` property of the item in 
+the data source.
+
+The default value is `false` for `kendo.data.breeze.Source` and `true` for `kendo.data.breeze.SchedulerSource`
+(because the Kendo scheduler cannot handle circular references.)
