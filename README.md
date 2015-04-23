@@ -51,6 +51,10 @@ seems to best support ASP.NET) it should work flawless.
 
 - supports server-side pagination, sort, filters.
 
+## Known Limitations
+
+- Doesn't support nested entities (see [Nested objects in Datagrid #1](https://github.com/iozag/breeze-kendo/issues/1))
+
 ## Usage
 
 ### Loading
