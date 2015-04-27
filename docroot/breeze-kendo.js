@@ -5,7 +5,7 @@
  * You can get the latest version at https://github.com/iozag/breeze-kendo.
  *
  * Version 0.1.0
- * 
+ *
  * Released under Apache 2.0 licence (http://kendoui-labs.telerik.com/#license)
  *
  */
@@ -547,6 +547,22 @@
                 _this._change();
                 _this.transport._cancelChanges();
             }
+        },
+
+        _createNewModel: function (model) {
+            var newModel = kendo.data.SchedulerDataSource.prototype._createNewModel.call(this, model);
+
+            // Make sure that the model has properties properly initialized. This is a requirement
+            // of the Scheduler templates (Otherwise an exception will be thrown if an new empty
+            // event is shown in the edit dialog of the scheduler) and might also be a requirement 
+            // of the backend (which for example expects isAllDay to be an valid boolean and not 
+            // null)
+            newModel.title = '';
+            newModel.recurrenceId = 0;
+            newModel.recurs = false;
+            newModel.isAllDay = false;
+
+            return newModel;
         }
     });
 })(jQuery, kendo, breeze);
