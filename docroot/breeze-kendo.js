@@ -518,16 +518,24 @@
      */
     exports.SchedulerSource = kendo.data.SchedulerDataSource.extend({
         init: function (options) {
-            var transport = new BreezeTransport(options, kendo.data.SchedulerEvent);
+            var transport;
+
+            options = $.extend(
+                {},
+                {
+                    // By default use mapping to avoid circular references in the data items,
+                    // since Kendo Scheduler cannot handle them.
+                    useBreezeMapping: true
+                },
+                options);
+            transport = new BreezeTransport(options, kendo.data.SchedulerEvent);
+
             options = $.extend(
                 {},
                 {
                     transport: transport,
                     schema: transport._makeSchema(),
-                    batch: true,
-                    // By default use mapping to avoid circular references in the data items,
-                    // since Kendo Scheduler cannot handle them.
-                    useBreezeMapping: true
+                    batch: true
                 },
                 options);
             kendo.data.SchedulerDataSource.prototype.init.call(this, options);
