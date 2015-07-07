@@ -4,7 +4,7 @@
  * This is a forked version of the breeze-kendo bridge (https://github.com/kendo-labs/breeze-kendo).
  * You can get the latest version at https://github.com/iozag/breeze-kendo.
  *
- * Version 0.1.1
+ * Version 0.1.2
  *
  * Released under Apache 2.0 licence (http://kendoui-labs.telerik.com/#license)
  *
