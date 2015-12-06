@@ -12,7 +12,7 @@ test_script:
 
   - gulp
   
-  - cmd: 7z a "breeze-kendo_%GitVersion_NuGetVersion%.zip" -r .\dest\*.*
+  - cmd: 7z a "breeze-kendo_%GitVersion_NuGetVersion%.zip" -r .\dist\*.*
   - cmd: appveyor PushArtifact "breeze-kendo_%GitVersion_NuGetVersion%.zip"
   
 build: off
