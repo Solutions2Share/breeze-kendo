@@ -1,0 +1,18 @@
+environment:
+  nodejs_version: "5.1.0"
+
+install:
+  - choco install gitversion.portable -pre -y
+  - ps: Install-Product node $env:nodejs_version
+  - npm install
+  - npm install -g gulp
+
+test_script:
+  - ps: gitversion /l console /output buildserver
+
+  - gulp
+  
+  - cmd: 7z a "breeze-kendo_%GitVersion_NuGetVersion%.zip" -r .\dest\*.*
+  - cmd: appveyor PushArtifact "breeze-kendo_%GitVersion_NuGetVersion%.zip"
+  
+build: off
