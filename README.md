@@ -1,7 +1,10 @@
-# Note
+# Breeze Kendo DataSource
+
+[![Build status](https://ci.appveyor.com/api/projects/status/6ey4q1x7tlubh2gh/branch/master?svg=true)](https://ci.appveyor.com/project/IOZ/breeze-kendo/branch/master)
+
 This is a fork of [Teleriks Breeze Kendo DataSource](https://github.com/kendo-labs/breeze-kendo) containing additional features and bug fixes.
 
-# Setup
+## Setup
 
 Install mongodb, i.e. `apt-get install mongodb`, or however it's done
 on your OS.  We don't need the system-wide service, so we can stop it:
@@ -33,7 +36,7 @@ metadata argument, but Breeze.js doesn't send it.  Any case, that's
 not a bug of our wrappers, I suspect with a better server side (Breeze
 seems to best support ASP.NET) it should work flawless.
 
-## Features
+### Features
 
 - creates a Kendo DataSource object that is kept in sync with the
   Breeze entities.  For instance when an entity changes, the Kendo DS
@@ -51,13 +54,13 @@ seems to best support ASP.NET) it should work flawless.
 
 - supports server-side pagination, sort, filters.
 
-## Known Limitations
+### Known Limitations
 
 - Doesn't support nested entities (see [Nested objects in Datagrid #1](https://github.com/iozag/breeze-kendo/issues/1))
 
-## Usage
+### Usage
 
-### Loading
+#### Loading
 
 We assume your server is alredy configured for Breeze.js.
 
@@ -71,7 +74,7 @@ UI and Breeze:
 <script src="breeze-kendo.js"></script>
 ```
 
-### Using with Kendo Widgets
+#### Using with Kendo Widgets
 
 It defines `kendo.data.breeze.Source`, an object which inherits from `kendo.data.DataSource` and can be used seamlessly with any widgets
 that support the [DataSource API](http://docs.telerik.com/kendo-ui/api/framework/datasource).  
@@ -115,7 +118,7 @@ $("#grid").kendoGrid({
 
 Now pagination, sorting, filtering and even saving is entirely handled by Breeze through our bindings.
 
-### Using with Kendo Scheduler
+#### Using with Kendo Scheduler
 
 Use `kendo.data.breeze.SchedulerSource`, an object which inherits from
 [`kendo.data.SchedulerDataSource`](http://docs.telerik.com/kendo-ui/api/javascript/data/schedulerdatasource) 
@@ -139,23 +142,23 @@ var dataSource = new kendo.data.breeze.SchedulerSource({
 
 The scheduler jQuery element is only required if you want the data source to filter data to the current view of the scheduler.
 
-### Options
+#### Options
 
 Additionally to the default [DataSource configuration](http://docs.telerik.com/kendo-ui/api/javascript/data/datasource#configuration) 
 the following options are available
 
-#### query
+##### query
 The [breeze.EntityQuery](http://www.breezejs.com/sites/all/apidocs/classes/EntityQuery.html) which should be used for accessing the data.
 
-#### manager
+##### manager
 The [breeze.EntityManager](http://www.breezejs.com/sites/all/apidocs/classes/EntityManager.html) which should be used for accessing the data.
 
-#### scheduler
+##### scheduler
 A jQuery element. 
 
 The scheduler jQuery element is only required if you want the data source to filter data to the current view of the scheduler.
 
-#### useBreezeMapping
+##### useBreezeMapping
 A boolean flag indicating if the Breeze entity should be available from the data item.
 
 If set to `true`, the mapping between Breeze entities and Kendo data items is handled internally by 
