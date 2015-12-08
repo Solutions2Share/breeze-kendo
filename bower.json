@@ -1,0 +1,26 @@
+{
+  "name": "breeze-kendo",
+  "description": "Kendo UI DataSource for accessing data via the BreezeJS library.",
+  "main": "dist/breeze-kendo.js",
+  "authors": [
+    "IOZ AG"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "breeze",
+    "kendo"
+  ],
+  "homepage": "https://github.com/iozag/breeze-kendo",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/iozag/breeze-kendo.git"
+  },
+  "moduleType": ["globals"],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
