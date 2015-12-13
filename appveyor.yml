@@ -5,7 +5,7 @@ install:
   - choco install gitversion.portable -pre -y
   - ps: Install-Product node $env:nodejs_version
   - npm install --only=dev
-  - npm install -g gulp
+  - npm install gulpjs/gulp-cli#4.0 -g
 
 test_script:
   - ps: gitversion /l console /output buildserver
