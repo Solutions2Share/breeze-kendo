@@ -16,12 +16,12 @@ var paths = {
 };
 
 // Delete the dist directory
-gulp.task('clean', function() {
-	del([paths.dist]);
+gulp.task('clean', function(done) {
+	return del([paths.dist], done);
 });
 
 // Lints the javascript files
-gulp.task('lint', [], function() {
+gulp.task('lint', function() {
 	return gulp.src(path.join(paths.src, '/**/*.js'))
 	 	.pipe(jshint()) // lint out file
  	 	.pipe(jshint.reporter('jshint-stylish')) // output using jshint-stylish
@@ -29,15 +29,17 @@ gulp.task('lint', [], function() {
 });
 
 // Process scripts and concatenate them into one output file
-gulp.task('copy', ['clean', 'lint'], function() {
-	return gulp.src(path.join(paths.src, '/**/*.js'))
-		.pipe(gulp.dest(paths.dist)) // copy original to destination folder
-		.pipe(sourcemaps.init()) // start watching for sourcemap
- 	 	.pipe(uglify()) // minify the code
-	 	.pipe(rename({suffix: '.min'})) //rename to .min
-		.pipe(sourcemaps.write('./')) // write sourcemap
-		.pipe(gulp.dest(paths.dist));  // copy minified version to destination folder
-});
+gulp.task('copy', gulp.series(
+	gulp.parallel(['clean', 'lint']), 
+	function() {
+		return gulp.src(path.join(paths.src, '/**/*.js'))
+			.pipe(gulp.dest(paths.dist)) // copy original to destination folder
+			.pipe(sourcemaps.init()) // start watching for sourcemap
+ 	 		.pipe(uglify()) // minify the code
+	 		.pipe(rename({suffix: '.min'})) //rename to .min
+			.pipe(sourcemaps.write('./')) // write sourcemap
+			.pipe(gulp.dest(paths.dist));  // copy minified version to destination folder
+}));
 
 // A development task to run anytime a file changes
 gulp.task('watch', function() {
@@ -45,4 +47,4 @@ gulp.task('watch', function() {
 });
 
 // Define the default task as a sequence of the above tasks
-gulp.task('default', ['copy']);
+gulp.task('default', gulp.series(['copy']));
