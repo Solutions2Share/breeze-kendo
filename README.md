@@ -1,6 +1,6 @@
 # Breeze Kendo DataSource
 
-[![Build status](https://ci.appveyor.com/api/projects/status/6ey4q1x7tlubh2gh/branch/master?svg=true)](https://ci.appveyor.com/project/IOZ/breeze-kendo/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/q7qkbl7ic27hbj7g/branch/master?svg=true)](https://ci.appveyor.com/project/bastianjohn/breeze-kendo/branch/master)
 
 This is a fork of [Teleriks Breeze Kendo DataSource](https://github.com/kendo-labs/breeze-kendo) containing additional features and bug fixes.
 
