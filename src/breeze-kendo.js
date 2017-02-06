@@ -466,7 +466,9 @@
                             type: proptype,
                             defaultValue: prop.defaultValue,
                             nullable: prop.isNullable,
-                            required: prop.isNullable
+                            validation: {
+                                required: !prop.isNullable
+                            }
                         };
                     });
                 } catch (ex) {
