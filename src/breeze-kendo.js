@@ -60,8 +60,9 @@
     function makeFilters(args) {
         var filters = args.filters.map(function (f) {
             var field = 'tolower(' + f.field + ')',
-                operator = makeOperator(f.operator),
-                value = f.value;
+                value = f.value.toLowerCase(),
+                operator = makeOperator(f.operator);
+                
             return Predicate.create(field, operator, value);
         });
 
