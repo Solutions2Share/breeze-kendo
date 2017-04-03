@@ -59,9 +59,19 @@
 
     function makeFilters(args) {
         var filters = args.filters.map(function (f) {
-            var field = 'tolower(' + f.field + ')',
-                operator = makeOperator(f.operator),
+            var field,
+                value,
+                operator = makeOperator(f.operator);
+
+            if (Object.prototype.toString.call(f.value) === "[object Date]") {
+                field = f.field,
+
                 value = f.value;
+            } else {
+                field = 'tolower(' + f.field + ')',
+                value = f.value.toLowerCase();
+            }
+            
             return Predicate.create(field, operator, value);
         });
 
