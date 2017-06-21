@@ -33,6 +33,7 @@
 
         this.manager = options.manager;
         this.query = options.query;
+        this.useLocalQuery = options.useLocalQuery;
         this.useBreezeMapping = options.useBreezeMapping;
         this.scheduler = options.scheduler;
         this.kendoModelType = kendoModelType;
@@ -218,14 +219,26 @@
                 }
 
                 try {
-                    _this.manager.executeQuery(query,
-                         function (data) {
-                             options.success(_this._makeResults(data));
+                    var localData;
+
+                    if (_this.useLocalQuery) {
+                        // Get entities from the local cache.
+                        localData = _this.manager.executeQueryLocally(query);
+                    }
+
+                    if (localData !== undefined && localData !== null && localData.length > 0) {
+                        options.success(_this._makeResults({ results: localData }));
+                    } else {
+                        // Get entities from the server.
+                        _this.manager.executeQuery(query,
+                        function (data) {
+                            options.success(_this._makeResults(data));
                         },
                         function (err) {
                             options.error(err);
                         }
                     );
+                    }
                 } catch (ex) {
                     console.error(ex);
                 }
